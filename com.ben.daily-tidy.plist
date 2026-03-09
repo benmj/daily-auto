@@ -3,20 +3,20 @@
 <plist version="1.0">
 <dict>
 	<key>Label</key>
-	<string>com.ben.daily-note</string>
+	<string>com.ben.daily-tidy</string>
 
 	<key>ProgramArguments</key>
 	<array>
 		<string>/bin/bash</string>
-		<string>/Users/ben/code/daily-auto/daily-note.sh</string>
+		<string>/Users/ben/code/daily-auto/tidy.sh</string>
 	</array>
 
 	<key>StartCalendarInterval</key>
 	<dict>
 		<key>Hour</key>
-		<integer>7</integer>
+		<integer>12</integer>
 		<key>Minute</key>
-		<integer>30</integer>
+		<integer>0</integer>
 	</dict>
 
 	<key>ExitTimeOut</key>
@@ -29,9 +29,9 @@
 	<string>Background</string>
 
 	<key>StandardOutPath</key>
-	<string>/Users/ben/Library/Logs/daily-note/launchd-stdout.log</string>
+	<string>/Users/ben/Library/Logs/daily-note/launchd-tidy-stdout.log</string>
 
 	<key>StandardErrorPath</key>
-	<string>/Users/ben/Library/Logs/daily-note/launchd-stderr.log</string>
+	<string>/Users/ben/Library/Logs/daily-note/launchd-tidy-stderr.log</string>
 </dict>
 </plist>

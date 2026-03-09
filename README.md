@@ -1,38 +1,34 @@
 # daily-auto
 
-Automated daily note creation via Claude Code + launchd.
+Automated daily notes and tidying via Claude Code + launchd.
 
-## What it does
+## Tasks
 
-Runs `/daily` (a Claude Code skill) every morning at 7:30 AM to create a daily note, carry over open tasks, reconcile granola meeting notes, and generate a weekly summary.
+| Script                  | Schedule         | What it does                                              |
+| ----------------------- | ---------------- | --------------------------------------------------------- |
+| `daily-note.sh`         | 07:30 daily      | Create daily note, carry over tasks, weekly summary       |
+| `granola-reconcile.sh`  | :00 every hour   | Crosslink orphaned granola meeting notes (skips Claude if none) |
+| `tidy.sh`               | 12:00 daily      | Reconcile granola + ticket refs + inline URLs             |
 
-## Files
-
-| File                    | Purpose                                              |
-| ----------------------- | ---------------------------------------------------- |
-| `daily-auto.sh`         | Shell wrapper: env setup, locking, logging, retries  |
-| `com.ben.daily-note.plist` | launchd agent: daily at 7:30 AM                   |
+Shared infra (env, logging, locking, network, retries) lives in `common.sh`.
 
 ## Install
 
 ```bash
-# Copy plist to LaunchAgents
-cp com.ben.daily-note.plist ~/Library/LaunchAgents/
-
-# Load the agent
+cp com.ben.*.plist ~/Library/LaunchAgents/
 launchctl load ~/Library/LaunchAgents/com.ben.daily-note.plist
+launchctl load ~/Library/LaunchAgents/com.ben.granola-reconcile.plist
+launchctl load ~/Library/LaunchAgents/com.ben.daily-tidy.plist
 ```
 
 ## Logs
 
-`~/Library/Logs/daily-note/daily-note.log`
+Each task writes to `~/Library/Logs/daily-note/<task-name>.log`.
 
 ## Manual trigger
 
 ```bash
-# Direct
-bash daily-auto.sh
-
-# Via launchd
 launchctl start com.ben.daily-note
+launchctl start com.ben.granola-reconcile
+launchctl start com.ben.daily-tidy
 ```
