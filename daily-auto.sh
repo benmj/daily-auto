@@ -10,6 +10,7 @@ set -euo pipefail
 # launchd runs with minimal env, so set PATH explicitly
 export PATH="/Users/ben/.local/bin:/Users/ben/.nvm/versions/node/v22.14.0/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 export HOME="/Users/ben"
+unset CLAUDECODE 2>/dev/null || true
 
 DAILY_DIR="$HOME/Documents/daily"
 LOG_DIR="$HOME/Library/Logs/daily-note"
@@ -63,7 +64,7 @@ trap release_lock EXIT
 wait_for_network() {
     local elapsed=0
     while (( elapsed < NETWORK_TIMEOUT )); do
-        if curl -sf --max-time 5 "https://api.anthropic.com/" >/dev/null 2>&1; then
+        if curl -s --max-time 5 --head -o /dev/null "https://api.anthropic.com/" 2>/dev/null; then
             log "INFO" "Network available (${elapsed}s)"
             return 0
         fi
