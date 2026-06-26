@@ -27,26 +27,8 @@ EOF
 run_claude "$PROMPT"
 
 if python3 -c "import json; json.load(open('$OUT'))" 2>/dev/null; then
-    # cross-link each event to a same-date granola note whose title matches (rendered as source-granola-*.html in brain)
-    python3 - "$OUT" <<'PYEOF'
-import json,sys,glob,os,re
-out=sys.argv[1]
-try: cal=json.load(open(out))
-except Exception: sys.exit(0)
-DAILY=os.path.expanduser("~/Documents/daily")
-gran={}
-for p in glob.glob(DAILY+"/granola/*.md"):
-    m=re.match(r"(\d{4}-\d{2}-\d{2})-(.+)", os.path.splitext(os.path.basename(p))[0])
-    if m: gran.setdefault(m.group(1),[]).append((os.path.splitext(os.path.basename(p))[0], m.group(2)))
-norm=lambda s: set(w for w in re.sub(r"[^a-z0-9]+"," ",s.lower()).split() if len(w)>2)
-for e in cal.get("events",[]):
-    best,bs=None,0; et=norm(e.get("title",""))
-    for stem,slug in gran.get(e.get("date"),[]):
-        sc=len(et & norm(slug.replace("-"," ")))
-        if sc>bs: bs,best=sc,stem
-    if best and bs>=1: e["granola"]="source-granola-"+best+".html"
-json.dump(cal,open(out,"w"),ensure_ascii=False)
-PYEOF
+    # cross-link each event to a same-date granola note (shared matcher; see granola-match.py)
+    python3 "$(dirname "$0")/granola-match.py" "$OUT" >>"$LOG_FILE" 2>&1 || true
     if rsync -az "$OUT" benito@benitos-mac-mini:/srv/benbybenjacobs.com/brain/calendar.json 2>>"$LOG_FILE"; then
         log "INFO" "calendar published ($(python3 -c "import json;print(len(json.load(open('$OUT'))['events']))" 2>/dev/null) events)"
     else
