@@ -10,7 +10,7 @@
 TASK_NAME="corpus-compile"
 source "$(dirname "$0")/common.sh"
 
-CORPUS="$HOME/Documents/daily/bin/corpus"
+CORPUS="$HOME/daily/bin/corpus"
 target="${1:-$(date -v-1d +%F)}"   # macOS date: yesterday
 
 log "INFO" "=== Starting corpus-compile for $target ==="
@@ -31,7 +31,7 @@ fi
 # HERE — the Mac has every note local; Benito's iCloud copies are dataless and
 # generating there hangs on on-demand downloads. Benito just serves the static
 # output, so we rsync it over.
-WEB="$HOME/Documents/daily/.corpus/web"
+WEB="$HOME/daily/.corpus/web"
 "$CORPUS" web --out "$WEB" 2>&1 | while IFS= read -r l; do log "INFO" "web: $l"; done || true
 if rsync -az --delete "$WEB/" benito@benitos-mac-mini:/srv/benbybenjacobs.com/brain/ 2>>"$LOG_FILE"; then
     log "INFO" "brain published to Benito"

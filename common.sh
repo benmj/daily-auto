@@ -11,7 +11,7 @@ export PATH="/Users/ben/.local/bin:/Users/ben/.nvm/versions/node/v22.14.0/bin:/o
 export HOME="/Users/ben"
 unset CLAUDECODE 2>/dev/null || true
 
-DAILY_DIR="$HOME/Documents/daily"
+DAILY_DIR="$HOME/daily"
 LOG_DIR="$HOME/Library/Logs/daily-note"
 LOCK_FILE="/tmp/daily-auto-${TASK_NAME:?TASK_NAME must be set before sourcing common.sh}.lock"
 LOG_FILE="$LOG_DIR/${TASK_NAME}.log"

@@ -6,7 +6,7 @@
 TASK_NAME="granola-relink"
 source "$(dirname "$0")/common.sh"
 
-OUT="$HOME/Documents/daily/.corpus/web/calendar.json"
+OUT="$HOME/daily/.corpus/web/calendar.json"
 [ -f "$OUT" ] || exit 0
 
 result=$(python3 "$(dirname "$0")/granola-match.py" "$OUT" 2>>"$LOG_FILE")

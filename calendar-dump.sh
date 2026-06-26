@@ -6,7 +6,7 @@
 TASK_NAME="calendar-dump"
 source "$(dirname "$0")/common.sh"
 
-WEB="$HOME/Documents/daily/.corpus/web"
+WEB="$HOME/daily/.corpus/web"
 OUT="$WEB/calendar.json"
 mkdir -p "$WEB"
 

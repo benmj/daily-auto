@@ -15,7 +15,7 @@ run_claude "/daily"
 exit_code=$?
 
 # Keep the corpus search index fresh (cheap, deterministic, no LLM call).
-if "$HOME/Documents/daily/bin/corpus" reindex >/dev/null 2>&1; then
+if "$HOME/daily/bin/corpus" reindex >/dev/null 2>&1; then
     log "INFO" "corpus reindexed"
 else
     log "WARN" "corpus reindex failed (non-fatal)"
