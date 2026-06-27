@@ -56,7 +56,17 @@ acquire_lock() {
 release_lock() {
     rm -f "$LOCK_FILE"
 }
-trap release_lock EXIT
+
+# Stamp a tiny status file the brain's System dashboard reads (Syncthing carries it to
+# Benito). Captures last run + exit code per job, so the dashboard shows true last-run.
+stamp_status() {
+    local rc="${1:-0}" d="$DAILY_DIR/.status"
+    mkdir -p "$d" 2>/dev/null || return 0
+    printf '{"task":"%s","last_run":"%s","exit":%s,"host":"%s"}\n' \
+        "$TASK_NAME" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$rc" "$(hostname -s)" \
+        > "$d/${TASK_NAME}.json" 2>/dev/null || true
+}
+trap 'rc=$?; stamp_status "$rc"; release_lock' EXIT
 
 # ---------------------------------------------------------------------------
 # Network check
