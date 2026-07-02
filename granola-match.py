@@ -29,7 +29,7 @@ def main(out):
         cal = json.load(open(out))
     except Exception:
         return
-    daily = os.path.expanduser("~/Documents/daily")
+    daily = os.path.expanduser("~/daily")
     gran = {}
     for p in glob.glob(daily + "/granola/*.md"):
         m = re.match(r"(\d{4}-\d{2}-\d{2})-(.+)", os.path.splitext(os.path.basename(p))[0])
