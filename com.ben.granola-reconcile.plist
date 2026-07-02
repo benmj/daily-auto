@@ -11,11 +11,8 @@
 		<string>/Users/ben/code/daily-auto/granola-reconcile.sh</string>
 	</array>
 
-	<key>StartCalendarInterval</key>
-	<dict>
-		<key>Minute</key>
-		<integer>0</integer>
-	</dict>
+	<key>StartInterval</key>
+	<integer>900</integer>
 
 	<key>ExitTimeOut</key>
 	<integer>300</integer>
