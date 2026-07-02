@@ -1,13 +1,15 @@
 #!/usr/bin/env bash
-# calendar-dump.sh — refresh the brain right-rail's calendar.
-# Runs on the Mac (headless claude here has the Google Calendar MCP, same as the
-# briefing). Dumps the next 3 days to calendar.json and rsyncs it to Benito so
-# brain.…ts.net shows a live schedule. Validates JSON before publishing.
+# calendar-dump.sh — refresh the brain right-rail's calendar + linear tickets.
+# Runs on the Mac (headless claude here has the Google Calendar + Linear MCPs, same
+# as the briefing). Dumps the next 3 days to calendar.json and my in-progress Linear
+# issues to linear.json, then rsyncs both to Benito so brain.…ts.net shows a live
+# schedule. Validates JSON before publishing.
 TASK_NAME="calendar-dump"
 source "$(dirname "$0")/common.sh"
 
 WEB="$HOME/daily/.corpus/web"
 OUT="$WEB/calendar.json"
+LOUT="$WEB/linear.json"
 mkdir -p "$WEB"
 
 log "INFO" "=== calendar-dump ==="
@@ -36,5 +38,29 @@ if python3 -c "import json; json.load(open('$OUT'))" 2>/dev/null; then
     fi
 else
     log "WARN" "calendar.json missing/invalid — kept previous"
+fi
+
+# my in-progress Linear tickets → linear.json (rendered under the calendar in the rail)
+read -r -d '' LPROMPT <<EOF || true
+Use the Linear tool (mcp__claude_ai_Linear__list_issues) to list issues assigned to me
+whose workflow state type is "started" (i.e. In Progress / In Review — actively being
+worked, not todo/backlog/done). Then use the Write tool to write ONLY this JSON to the
+file ${LOUT} (no prose, no markdown fence):
+{"generated":"<ISO8601 now>","issues":[
+  {"id":"<identifier e.g. ENG-123>","title":"...","state":"<state name>",
+   "project":<project name or null>,"url":"<issue url>"}]}
+issues sorted by most recently updated first. If there are none, write {"generated":"<ISO8601 now>","issues":[]}.
+EOF
+
+run_claude "$LPROMPT"
+
+if python3 -c "import json; json.load(open('$LOUT'))" 2>/dev/null; then
+    if rsync -az "$LOUT" benito@benitos-mac-mini:/srv/benbybenjacobs.com/brain/linear.json 2>>"$LOG_FILE"; then
+        log "INFO" "linear published ($(python3 -c "import json;print(len(json.load(open('$LOUT'))['issues']))" 2>/dev/null) issues)"
+    else
+        log "WARN" "linear rsync to Benito failed"
+    fi
+else
+    log "WARN" "linear.json missing/invalid — kept previous"
 fi
 log "INFO" "=== done ==="
